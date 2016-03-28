@@ -82,18 +82,21 @@ public class CastRemoteDisplayActivity extends ActionBarActivity {
         setupActionBar();
 
         // Local UI
-        final Button button = (Button) findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Change the remote display animation color when the button is clicked
-                PresentationService presentationService
-                        = (PresentationService) CastRemoteDisplayLocalService.getInstance();
-                if (presentationService != null) {
-                    presentationService.changeColor();
-                }
-            }
-        });
+//        final Button button = (Button) findViewById(R.id.button);
+
+
+        // FIXME make 25 buttons... and set listener appropriately
+//        button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // Change the remote display animation color when the button is clicked
+//                PresentationService presentationService
+//                        = (PresentationService) CastRemoteDisplayLocalService.getInstance();
+//                if (presentationService != null) {
+//                    presentationService.selectWord();
+//                }
+//            }
+//        });
 
         mMediaRouter = MediaRouter.getInstance(getApplicationContext());
         mMediaRouteSelector = new MediaRouteSelector.Builder()
