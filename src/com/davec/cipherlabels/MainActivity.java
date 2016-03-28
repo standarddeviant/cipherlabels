@@ -49,6 +49,11 @@ public class MainActivity extends ActionBarActivity {
     private MediaRouteButton mMediaRouteButton;
     private int mRouteCount = 0;
     private MediaRouterButtonView mMediaRouterButtonView;
+    private String[] wordvals = new String[25]; //FIXME, change 25 to be an xml param
+    // wordcolors = { "blue" , "red" , "yellow" , "black" }
+    private String[] wordcolor = new String[25]; //FIXME, change 25 to be an xml param
+    private boolean[] wordstate = new boolean[25]; //FIXME, change 25 to be an xml param
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +65,7 @@ public class MainActivity extends ActionBarActivity {
 
         TextView titleTextView = (TextView) findViewById(R.id.title);
         Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
-        titleTextView.setTypeface(typeface);
+//        titleTextView.setTypeface(typeface);
 
         mMediaRouteSelector = new MediaRouteSelector.Builder()
                 .addControlCategory(
@@ -75,8 +80,40 @@ public class MainActivity extends ActionBarActivity {
             mMediaRouteButton.setRouteSelector(mMediaRouteSelector);
         }
 
+        //initialize game state
+        this.initializeGameState();
 
     }
+
+    public void initializeGameState() {
+//        private String[] wordvals = new String[25]; //FIXME, change 25 to be an xml param
+//        // wordcolors = { "blue" , "red" , "tan" , "black" }
+//        private String[] wordcolor = new String[25]; //FIXME, change 25 to be an xml param
+//        private boolean[] wordstate = new boolean[25]; //FIXME, change 25 to be an xml param
+        // FIXME, n choose k wordvals, n=25, k=len(R.words.words), loop over 25 w/ random vec
+
+        // tmpset = Set(1:25)
+
+        // FIXME, init wordcolors to all tan
+
+        // FIXME, coinflip = rand(0,1)
+        // team1color = coinflip ? "blue" : "red";
+        // team1cards = n choose k wordvals, n=9, k=25, loop over 9, fill in w/ team1color
+        // prune tmpset w/ team1cards
+
+        // team2color = team1color=="red" ? "blue" : "red";
+        // team2cards = n choose k wordvals, n=8, k=25-9, loop over 8, fill in w/ team2color
+        // prune tmpset w/ team2cards
+
+        // losecolor = "black"
+
+        // FIXME, n choose k wordvals, n=1, k=25-9-8
+
+
+    }
+
+
+
 
     public void onClickWord(View v) {
         int btnId = v.getId();

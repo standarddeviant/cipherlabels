@@ -27,5 +27,6 @@
     <string name="play">PLAY</string>
     <string name="select_word">SELECT WORD</string>
     <string name="main_screen_top">The boxes below will be filled when in when the game is started.</string>
+    <string name="ssBtnTextSize">12dp</string>
 
 </resources>
