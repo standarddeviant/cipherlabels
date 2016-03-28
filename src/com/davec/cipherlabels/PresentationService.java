@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package com.example.castremotedisplay;
+package com.davec.cipherlabels;
 
 import com.google.android.gms.cast.CastPresentation;
 import com.google.android.gms.cast.CastRemoteDisplayLocalService;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.media.MediaPlayer;
 //import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
+import android.view.View;
 import android.view.WindowManager;
-import android.widget.TextView;
 
 //import javax.microedition.khronos.egl.EGL10;
 //import javax.microedition.khronos.egl.EGLConfig;
@@ -89,10 +88,11 @@ public class PresentationService extends CastRemoteDisplayLocalService {
     /**
      * Utility method to allow the user to select a word.
      */
-    public void selectWord() {
-//        mGameState = "I've been hit!";
+    public void buttonPress(View v) {
+        int btnId = v.getId();
+        String tmpstr = String.format("btnId = %4d\n", btnId);
+        Log.d(TAG, tmpstr);
     }
-
 
 
 //    /**

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.castremotedisplay;
+package com.davec.cipherlabels;
 
 import com.google.android.gms.cast.CastDevice;
 import com.google.android.gms.cast.CastMediaControlIntent;
@@ -74,6 +74,14 @@ public class MainActivity extends ActionBarActivity {
             mMediaRouteButton = mMediaRouterButtonView.getMediaRouteButton();
             mMediaRouteButton.setRouteSelector(mMediaRouteSelector);
         }
+
+
+    }
+
+    public void onClickWord(View v) {
+        int btnId = v.getId();
+        String tmpstr = String.format("btnId = %4d\n", btnId);
+        Log.d(TAG, tmpstr);
     }
 
     private void setFullScreen() {

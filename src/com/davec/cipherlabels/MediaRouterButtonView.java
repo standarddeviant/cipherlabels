@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.castremotedisplay;
+package com.davec.cipherlabels;
 
 import android.content.Context;
 import android.content.res.TypedArray;

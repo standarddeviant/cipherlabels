@@ -18,126 +18,131 @@
      See corresponding Java code CastRemoteDisplayMainActivity.java. -->
 
 
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:columnCount="1"
     android:orientation="horizontal">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/fsTopText"
+        android:text="@string/main_screen_top"
+        android:textSize="30dp"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+    <!--FIXME add padding above-->
+    <TextView
+        android:text=""
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TableRow
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:weightSum="5">
-            <Button android:text="1" android:id="@+id/Button01"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:layout_weight="1"/>
-            <Button android:text="2" android:id="@+id/Button02"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:layout_weight="1"/>
-            <Button android:text="3" android:id="@+id/Button03"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:layout_weight="1"/>
-            <Button android:text="4" android:id="@+id/Button04"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:layout_weight="1"/>
-            <Button android:text="5" android:id="@+id/Button05"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:layout_weight="1"/>
-    </LinearLayout>
+        <Button android:text="1" android:id="@+id/fsButton01"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <Button android:text="2" android:id="@+id/fsButton02"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <Button android:text="3" android:id="@+id/fsButton03"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <Button android:text="4" android:id="@+id/fsButton04"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <Button android:text="5" android:id="@+id/fsButton05"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+    </TableRow>
 
-    <LinearLayout
+    <TableRow
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:weightSum="5">
-        <Button android:text="6" android:id="@+id/Button06"
+        <Button android:text="6" android:id="@+id/fsButton06"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_weight="1"/>
-        <Button android:text="7" android:id="@+id/Button07"
+        <Button android:text="7" android:id="@+id/fsButton07"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_weight="1"/>
-        <Button android:text="8" android:id="@+id/Button08"
+        <Button android:text="8" android:id="@+id/fsButton08"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_weight="1"/>
-        <Button android:text="9" android:id="@+id/Button09"
+        <Button android:text="9" android:id="@+id/fsButton09"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_weight="1"/>
-        <Button android:text="10" android:id="@+id/Button10"
+        <Button android:text="10" android:id="@+id/fsButton10"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_weight="1"/>
-    </LinearLayout>
+    </TableRow>
 
-    <LinearLayout
+    <TableRow
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:weightSum="5">
-        <Button android:text="11" android:id="@+id/Button11"
+        <Button android:text="11" android:id="@+id/fsButton11"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_weight="1"/>
-        <Button android:text="12" android:id="@+id/Button12"
+        <Button android:text="12" android:id="@+id/fsButton12"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_weight="1"/>
-        <Button android:text="13" android:id="@+id/Button13"
+        <Button android:text="13" android:id="@+id/fsButton13"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_weight="1"/>
-        <Button android:text="14" android:id="@+id/Button14"
+        <Button android:text="14" android:id="@+id/fsButton14"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_weight="1"/>
-        <Button android:text="15" android:id="@+id/Button15"
+        <Button android:text="15" android:id="@+id/fsButton15"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_weight="1"/>
-    </LinearLayout>
+    </TableRow>
 
-    <LinearLayout
+    <TableRow
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:weightSum="5">
-        <Button android:text="16" android:id="@+id/Button16"
+        <Button android:text="16" android:id="@+id/fsButton16"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_weight="1"/>
-        <Button android:text="17" android:id="@+id/Button17"
+        <Button android:text="17" android:id="@+id/fsButton17"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_weight="1"/>
-        <Button android:text="18" android:id="@+id/Button18"
+        <Button android:text="18" android:id="@+id/fsButton18"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_weight="1"/>
-        <Button android:text="19" android:id="@+id/Button19"
+        <Button android:text="19" android:id="@+id/fsButton19"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_weight="1"/>
-        <Button android:text="20" android:id="@+id/Button20"
+        <Button android:text="20" android:id="@+id/fsButton20"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_weight="1"/>
-    </LinearLayout>
+    </TableRow>
 
-    <LinearLayout
+    <TableRow
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:weightSum="5">
-        <Button android:text="21" android:id="@+id/Button21"
+        <Button android:text="21" android:id="@+id/fsButton21"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_weight="1"/>
-        <Button android:text="22" android:id="@+id/Button22"
+        <Button android:text="22" android:id="@+id/fsButton22"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_weight="1"/>
-        <Button android:text="23" android:id="@+id/Button23"
+        <Button android:text="23" android:id="@+id/fsButton23"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_weight="1"/>
-        <Button android:text="24" android:id="@+id/Button24"
+        <Button android:text="24" android:id="@+id/fsButton24"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_weight="1"/>
-        <Button android:text="25" android:id="@+id/Button25"
+        <Button android:text="25" android:id="@+id/fsButton25"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_weight="1"/>
-    </LinearLayout>
+    </TableRow>
 
-
-    <!--<RelativeLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-        <!--&lt;!&ndash;&lt;!&ndash;<android.opengl.GLSurfaceView&ndash;&gt;&ndash;&gt;-->
-                <!--&lt;!&ndash;&lt;!&ndash;android:id="@+id/surface_view"&ndash;&gt;&ndash;&gt;-->
-                <!--&lt;!&ndash;&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;&ndash;&gt;-->
-                <!--&lt;!&ndash;&lt;!&ndash;android:layout_height="match_parent"/>&ndash;&gt;&ndash;&gt;-->
-    <!--</RelativeLayout>-->
-
-</GridLayout>
+</TableLayout>

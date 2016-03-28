@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.castremotedisplay;
+package com.davec.cipherlabels;
 
 import com.google.android.gms.cast.CastDevice;
 import com.google.android.gms.cast.CastMediaControlIntent;
@@ -23,6 +23,7 @@ import com.google.android.gms.common.api.Status;
 
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
@@ -35,7 +36,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 /**
@@ -81,22 +81,18 @@ public class CastRemoteDisplayActivity extends ActionBarActivity {
         setFullScreen();
         setupActionBar();
 
-        // Local UI
-//        final Button button = (Button) findViewById(R.id.button);
 
 
-        // FIXME make 25 buttons... and set listener appropriately
-//        button.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // Change the remote display animation color when the button is clicked
-//                PresentationService presentationService
-//                        = (PresentationService) CastRemoteDisplayLocalService.getInstance();
-//                if (presentationService != null) {
-//                    presentationService.selectWord();
-//                }
-//            }
-//        });
+        // FIXME make 25 buttons... and set listener appropriately - done in xml
+
+        // example of how to "grab" or use all 25 buttons on second screen
+        for(int btnidx=1; btnidx<=25 ;btnidx++) {
+            String drawableStrId = String.format("ssButton%02d", btnidx);
+            int drawableIntId = this.getResources().getIdentifier(drawableStrId, "id", this.getPackageName());
+            String tmpstr = String.format("str=%s , int=%d\n", drawableStrId, drawableIntId);
+            Log.d(TAG,tmpstr);
+        }
+
 
         mMediaRouter = MediaRouter.getInstance(getApplicationContext());
         mMediaRouteSelector = new MediaRouteSelector.Builder()
@@ -118,6 +114,12 @@ public class CastRemoteDisplayActivity extends ActionBarActivity {
 
         mMediaRouter.addCallback(mMediaRouteSelector, mMediaRouterCallback,
                 MediaRouter.CALLBACK_FLAG_REQUEST_DISCOVERY);
+    }
+
+    public void onClickWord(View v) {
+        int btnId = v.getId();
+        String tmpstr = String.format("btnId = %4d\n", btnId);
+        Log.d(TAG, tmpstr);
     }
 
     private void setupActionBar() {

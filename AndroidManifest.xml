@@ -15,7 +15,7 @@
   limitations under the License.
   -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.example.castremotedisplay"
+          package="com.davec.cipherlabels"
           android:versionCode="1"
           android:versionName="1.0">
 
@@ -48,7 +48,7 @@
                 android:label="@string/app_name">
         </activity>
 
-        <service android:name="com.example.castremotedisplay.PresentationService"
+        <service android:name=".PresentationService"
                  android:exported="false"/>
 
     </application>

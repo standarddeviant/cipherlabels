@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.castremotedisplay;
+package com.davec.cipherlabels;
 
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
