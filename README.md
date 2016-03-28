@@ -1,6 +1,5 @@
-# CastRemoteDisplay-android
-
-This Google Cast sample application shows how to use the Remote Display API.
+# cipherlabels
+This app is based off of the official example for Android's Remote Display API for Google Cast (CastRemoteDisplay-android).
 
 ## Dependencies
 * google-play-services_lib library from the Android SDK (at least version 7.5.62)
@@ -8,11 +7,11 @@ This Google Cast sample application shows how to use the Remote Display API.
 * android-support-v7-mediarouter (version 20 or above)
 
 ## Setup Instructions
-* Check out the code from GitHub
-* Create a new app ID for a Remote Display Receiver using the Google Cast SDK Developer Console: https://cast.google.com/publish/
-* Add the app ID to the resources strings.xml file
-* Run the app on your mobile device
-* Select a Google Cast device as a remote display by clicking on the "Play" button
+* ~Check out the code from GitHub~
+* ~Create a new app ID for a Remote Display Receiver using the Google Cast SDK Developer Console: https://cast.google.com/publish/~
+* ~Add the app ID to the resources strings.xml file~
+* ~Run the app on your mobile device~
+* ~Select a Google Cast device as a remote display by clicking on the "Play" button~
 
 ## References and How to report bugs
 * Cast APIs: https://developers.google.com/cast/
