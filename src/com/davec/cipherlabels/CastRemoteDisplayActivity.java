@@ -77,21 +77,21 @@ public class CastRemoteDisplayActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // FYI: already made 25 buttons and set listener appropriately - done in xml
+
+//        // example of how to "grab" or use all 25 buttons on second screen
+//        for(int btnidx=1; btnidx<=25 ;btnidx++) {
+//            String drawableStrId = String.format("ssButton%02d", btnidx);
+//            int drawableIntId = this.getResources().getIdentifier(drawableStrId, "id", this.getPackageName());
+//            String tmpstr = String.format("str=%s , int=%d\n", drawableStrId, drawableIntId);
+//            Log.d(TAG,tmpstr);
+//        }
+
+
         setContentView(R.layout.second_screen_layout);
         setFullScreen();
         setupActionBar();
 
-
-
-        // FIXME make 25 buttons... and set listener appropriately - done in xml
-
-        // example of how to "grab" or use all 25 buttons on second screen
-        for(int btnidx=1; btnidx<=25 ;btnidx++) {
-            String drawableStrId = String.format("ssButton%02d", btnidx);
-            int drawableIntId = this.getResources().getIdentifier(drawableStrId, "id", this.getPackageName());
-            String tmpstr = String.format("str=%s , int=%d\n", drawableStrId, drawableIntId);
-            Log.d(TAG,tmpstr);
-        }
 
 
         mMediaRouter = MediaRouter.getInstance(getApplicationContext());
