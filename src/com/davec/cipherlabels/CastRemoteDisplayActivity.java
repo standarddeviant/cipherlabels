@@ -23,10 +23,12 @@ import com.google.android.gms.common.api.Status;
 
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.MediaRouteActionProvider;
 import android.support.v7.media.MediaRouteSelector;
 import android.support.v7.media.MediaRouter;
@@ -36,7 +38,16 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+import java.util.HashMap;
+
 
 /**
  * <h3>CastRemoteDisplayActivity</h3>
@@ -55,7 +66,7 @@ import android.widget.Toast;
  * to the Android log which you can read using <code>adb logcat</code>.
  * </p>
  */
-public class CastRemoteDisplayActivity extends ActionBarActivity {
+public class CastRemoteDisplayActivity extends AppCompatActivity {
 
     private final String TAG = "CastRDisplayActivity";
 
@@ -68,6 +79,44 @@ public class CastRemoteDisplayActivity extends ActionBarActivity {
 
     private CastDevice mCastDevice;
 
+
+    private HashMap mButtonId2Idx = new HashMap(25);
+    private Button[] mButtons = new Button[25];
+    private String[] mWordValues = new String[25]; //FIXME, change 25 to be an xml param
+    // wordcolors = { "blue" , "red" , "yellow" , "black" }
+    private String[] mWordColors = new String[25]; //FIXME, change 25 to be an xml param
+    private int[] mWordStates = new int[25]; //FIXME, change 25 to be an xml param
+    private String mTeamColor1, mTeamColor2, mNeutralColor, mBombColor;
+    private List<Integer> mTeamCards1, mTeamCards2, mNeutralCards, mBombCards;
+
+    int[] mButtonIds = {
+            R.id.ssButton01,
+            R.id.ssButton02,
+            R.id.ssButton03,
+            R.id.ssButton04,
+            R.id.ssButton05,
+            R.id.ssButton06,
+            R.id.ssButton07,
+            R.id.ssButton08,
+            R.id.ssButton09,
+            R.id.ssButton10,
+            R.id.ssButton11,
+            R.id.ssButton12,
+            R.id.ssButton13,
+            R.id.ssButton14,
+            R.id.ssButton15,
+            R.id.ssButton16,
+            R.id.ssButton17,
+            R.id.ssButton18,
+            R.id.ssButton19,
+            R.id.ssButton20,
+            R.id.ssButton21,
+            R.id.ssButton22,
+            R.id.ssButton23,
+            R.id.ssButton24,
+            R.id.ssButton25
+    };
+
     /**
      * Initialization of the Activity after it is first created. Must at least
      * call {@link android.app.Activity#setContentView setContentView()} to
@@ -77,20 +126,62 @@ public class CastRemoteDisplayActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // FYI: already made 25 buttons and set listener appropriately - done in xml
-
-//        // example of how to "grab" or use all 25 buttons on second screen
-//        for(int btnidx=1; btnidx<=25 ;btnidx++) {
-//            String drawableStrId = String.format("ssButton%02d", btnidx);
-//            int drawableIntId = this.getResources().getIdentifier(drawableStrId, "id", this.getPackageName());
-//            String tmpstr = String.format("str=%s , int=%d\n", drawableStrId, drawableIntId);
-//            Log.d(TAG,tmpstr);
-//        }
-
-
         setContentView(R.layout.second_screen_layout);
         setFullScreen();
         setupActionBar();
+
+        // Local UI
+        // final Button button = (Button) findViewById(R.id.button);
+        // button.setOnClickListener(new View.OnClickListener() {
+        //    @Override
+        //    public void onClick(View v) {
+        //        // Change the remote display animation color when the button is clicked
+        //        PresentationService presentationService
+        //                = (PresentationService) CastRemoteDisplayLocalService.getInstance();
+        //        if (presentationService != null) {
+        //            presentationService.updateButton();
+        //        }
+        //    }
+        // });
+
+
+        //initialize game state
+        this.initializeGameState();
+        // example of how to "grab" or use all 25 buttons on second screen
+        for(int btnIdx=0; btnIdx<25; btnIdx++) {
+            // String drawableStrId = String.format("ssButton%02d", btnIdx);
+            // int drawableIntId = this.getResources().getIdentifier(drawableStrId, "id",
+            // this.getPackageName());
+            // int drawableIntId = this.getResources().getIdentifier(drawableStrId, "drawable",
+            //        this.getPackageName());
+
+             String tmpstr = String.format("would like to set %d to %s\n",mButtonIds[btnIdx],mWordValues[btnIdx]);
+             Log.d(TAG, tmpstr);
+
+            Button tmpBtn = (Button) findViewById(mButtonIds[btnIdx]);
+            mButtonId2Idx.put(mButtonIds[btnIdx], btnIdx);
+            mButtons[btnIdx] = tmpBtn;
+            mButtons[btnIdx].setText(mWordValues[btnIdx]);
+//            tmpBtn.setText(mWordValues[btnIdx]);
+            mWordStates[btnIdx] = 0;
+
+            // final int tmpBtnIdx = btnIdx;
+            // tmpBtn.setOnClickListener(new View.OnClickListener() {
+            //     @Override
+            //     public void onClick(View v) {
+            //         // Change the remote display animation color when the button is clicked
+            //         PresentationService presentationService
+            //                 = (PresentationService) CastRemoteDisplayLocalService.getInstance();
+            //         if (presentationService != null) {
+            //             this.buttonClick(tmpBtnIdx);
+            //         }
+            //     }
+            // });
+
+        }
+
+
+
 
 
 
@@ -116,10 +207,71 @@ public class CastRemoteDisplayActivity extends ActionBarActivity {
                 MediaRouter.CALLBACK_FLAG_REQUEST_DISCOVERY);
     }
 
+//    public class buttonListener implements View.OnClickListener {
+//        @Override
+//        public void onClick(View v) {
+//                int btnIdx = (int)mButtonId2Idx.get(v.getId());
+//
+//                String btnColor = mWordColors[btnIdx];
+//                PresentationService presentationService
+//                        = (PresentationService) CastRemoteDisplayLocalService.getInstance();
+//                if (presentationService != null) {
+//                    presentationService.updateButton(btnIdx,btnColor,"W()()T!");
+//                }
+//        }
+//    }
+
+
+    private String[] getRandomWordValues() {
+        Resources res = getResources();
+        List<String> thewords = Arrays.asList(res.getStringArray(R.array.LargeWordsArray));
+        String[] retWords = new String[25]; //FIXME, change 25 to be xml param
+        Collections.shuffle(thewords);
+        for( int idx=0; idx<25; idx++) {retWords[idx]=thewords.get(idx);}
+        return  retWords;
+    }
+
+    private void initializeGameState() {
+        Random rand = new Random();
+        mWordValues = getRandomWordValues();
+
+        // Create list of 0 - 24, shuffled
+        List<Integer> theIdxes = new ArrayList<Integer>();
+        for( int tidx=0; tidx<25; tidx++) {theIdxes.add(tidx);}
+        Collections.shuffle(theIdxes);
+
+        int coinflip = rand.nextInt(2);
+        mTeamColor1   = (0==coinflip)        ? "blue" : "red";
+        mTeamColor2   = ("red"==mTeamColor1) ? "blue" : "red";
+        mNeutralColor = "tan";
+        mBombColor    = "black";
+
+        mTeamCards1   = theIdxes.subList( 0, 9); // 9 long
+        mTeamCards2   = theIdxes.subList( 9,17); // 8 long
+        mNeutralCards = theIdxes.subList(17,24); // 7 long
+        mBombCards    = theIdxes.subList(24,25); // 1 long
+
+        // assign correct colors to mWordColors
+        for (Integer tmpidx: mTeamCards1)   {mWordColors[tmpidx] = mTeamColor1;}
+        for (Integer tmpidx: mTeamCards2)   {mWordColors[tmpidx] = mTeamColor2;}
+        for (Integer tmpidx: mNeutralCards) {mWordColors[tmpidx] = mNeutralColor;}
+        for (Integer tmpidx: mBombCards)    {mWordColors[tmpidx] = mBombColor;}
+
+    }
+
+
     public void onClickWord(View v) {
         int btnId = v.getId();
-        String tmpstr = String.format("btnId = %4d\n", btnId);
+        int btnIdx = (int)mButtonId2Idx.get(btnId);
+        String btnColor = mWordColors[btnIdx];
+        String tmpstr = String.format("onClickWord: btnId=%4d, btnIdx=%4d, btnColor=%s\n",
+                btnId, btnIdx, btnColor);
         Log.d(TAG, tmpstr);
+        PresentationService presentationService
+                = (PresentationService) CastRemoteDisplayLocalService.getInstance();
+        if (presentationService != null) {
+            presentationService.updateButton(btnIdx,btnColor,"W()()T!");
+        }
     }
 
     private void setupActionBar() {
