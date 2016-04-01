@@ -277,9 +277,9 @@ public class CastRemoteDisplayActivity extends AppCompatActivity {
 
     private void initializeGameState() {
         Random rand = new Random();
-        int blue  = 0xFF006AFF;
-        int red   = 0xFFFF2200;
-        int tan   = 0xFFB2BD39;
+        int blue  = 0xFF0000B5;
+        int red   = 0xFFB50000;
+        int tan   = 0xFF8D9900;
         int black = 0xFF000000;
         mWordValues = getRandomWordValues();
 
@@ -328,6 +328,7 @@ public class CastRemoteDisplayActivity extends AppCompatActivity {
         for(int bidx=0; bidx<mButtonIds.length; bidx++){
             Button tmpBtn = (Button) findViewById(mButtonIds[bidx]);
             tmpBtn.setEnabled(enabled);
+            tmpBtn.setTextColor(0xFFF0F0F0);
         }
     }
 
