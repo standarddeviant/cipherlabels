@@ -33,14 +33,23 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:minHeight="?attr/actionBarSize"
-        android:background="@drawable/ab_transparent_transparent"
-        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+        android:background="@drawable/ab_transparent_transparent"/>
+        <!--app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"-->
+        <!--app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>-->
 
     <!--<android.support.v7.widget.Toolbar android:id="@+id/toolbar"-->
         <!--android:layout_width="match_parent"-->
         <!--android:layout_height="?attr/actionBarSize"-->
         <!--android:background="?attr/colorPrimary" />    -->
+
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="5">
+    <Button android:text="Enable Word Flip" android:textSize="12dp" android:id="@+id/flipButton"
+        android:layout_width="wrap_content" android:layout_height="wrap_content" />
+    </TableRow>
 
 
     <TableRow

@@ -84,10 +84,11 @@ public class CastRemoteDisplayActivity extends AppCompatActivity {
     private Button[] mButtons = new Button[25];
     private String[] mWordValues = new String[25]; //FIXME, change 25 to be an xml param
     // wordcolors = { "blue" , "red" , "yellow" , "black" }
-    private String[] mWordColors = new String[25]; //FIXME, change 25 to be an xml param
+    private int[] mWordColors = new int[25]; //FIXME, change 25 to be an xml param
     private int[] mWordStates = new int[25]; //FIXME, change 25 to be an xml param
-    private String mTeamColor1, mTeamColor2, mNeutralColor, mBombColor;
+    private int mTeamColor1, mTeamColor2, mNeutralColor, mBombColor;
     private List<Integer> mTeamCards1, mTeamCards2, mNeutralCards, mBombCards;
+    private boolean mWordClickEnable = false;
 
     int[] mButtonIds = {
             R.id.ssButton01,
@@ -144,10 +145,33 @@ public class CastRemoteDisplayActivity extends AppCompatActivity {
         //    }
         // });
 
+        this.enableWordButtons(mWordClickEnable);
 
         //initialize game state
         this.initializeGameState();
-        // example of how to "grab" or use all 25 buttons on second screen
+
+
+        View.OnClickListener wordListener = new View.OnClickListener() {
+            public void onClick(View v) {
+                int btnId = v.getId();
+                int btnIdx = (int)mButtonId2Idx.get(btnId);
+                int btnColor = mWordColors[btnIdx];
+                String tmpstr = String.format("onClickWord: btnId=%4d, btnIdx=%4d, btnColor=%s\n",
+                        btnId, btnIdx, btnColor);
+                Log.d(TAG, tmpstr);
+                PresentationService presentationService
+                        = (PresentationService) CastRemoteDisplayLocalService.getInstance();
+                if (presentationService != null) {
+                    presentationService.updateButton(btnIdx,btnColor,"");
+                }
+                mWordClickEnable = false;
+                enableWordButtons(mWordClickEnable);
+            }
+        };
+
+
+        PresentationService presentationService
+                = (PresentationService) CastRemoteDisplayLocalService.getInstance();
         for(int btnIdx=0; btnIdx<25; btnIdx++) {
             // String drawableStrId = String.format("ssButton%02d", btnIdx);
             // int drawableIntId = this.getResources().getIdentifier(drawableStrId, "id",
@@ -162,8 +186,15 @@ public class CastRemoteDisplayActivity extends AppCompatActivity {
             mButtonId2Idx.put(mButtonIds[btnIdx], btnIdx);
             mButtons[btnIdx] = tmpBtn;
             mButtons[btnIdx].setText(mWordValues[btnIdx]);
+            mButtons[btnIdx].setBackgroundColor(mWordColors[btnIdx]);
+            mButtons[btnIdx].setOnClickListener(wordListener);
 //            tmpBtn.setText(mWordValues[btnIdx]);
             mWordStates[btnIdx] = 0;
+
+
+            if (presentationService != null) {
+                presentationService.setButtonText(btnIdx,mWordValues[btnIdx]);
+            }
 
             // final int tmpBtnIdx = btnIdx;
             // tmpBtn.setOnClickListener(new View.OnClickListener() {
@@ -180,11 +211,23 @@ public class CastRemoteDisplayActivity extends AppCompatActivity {
 
         }
 
+        View.OnLongClickListener flipListener = new View.OnLongClickListener() {
+            public boolean onLongClick(View v) {
+                // Button clickedButton = (Button) v;
+                // String buttonText = clickedButton.getText().toString();
+                // Log.v(TAG, "button long pressed --> " + buttonText);
+                mWordClickEnable = true;
+                enableWordButtons(mWordClickEnable);
+                return true;
+            }
+        };
+        Button tmpFlipBtn = (Button) findViewById(R.id.flipButton);
+        tmpFlipBtn.setOnLongClickListener(flipListener);
 
 
 
-
-
+        // BEGIN boiler plate cast code
+        // BEGIN boiler plate cast code
         mMediaRouter = MediaRouter.getInstance(getApplicationContext());
         mMediaRouteSelector = new MediaRouteSelector.Builder()
                 .addControlCategory(
@@ -202,9 +245,10 @@ public class CastRemoteDisplayActivity extends AppCompatActivity {
                 mCastDevice = extras.getParcelable(MainActivity.INTENT_EXTRA_CAST_DEVICE);
             }
         }
-
         mMediaRouter.addCallback(mMediaRouteSelector, mMediaRouterCallback,
                 MediaRouter.CALLBACK_FLAG_REQUEST_DISCOVERY);
+        // END boiler plate cast code
+        // END boiler plate cast code
     }
 
 //    public class buttonListener implements View.OnClickListener {
@@ -233,6 +277,10 @@ public class CastRemoteDisplayActivity extends AppCompatActivity {
 
     private void initializeGameState() {
         Random rand = new Random();
+        int blue  = 0xFF006AFF;
+        int red   = 0xFFFF2200;
+        int tan   = 0xFFB2BD39;
+        int black = 0xFF000000;
         mWordValues = getRandomWordValues();
 
         // Create list of 0 - 24, shuffled
@@ -241,10 +289,10 @@ public class CastRemoteDisplayActivity extends AppCompatActivity {
         Collections.shuffle(theIdxes);
 
         int coinflip = rand.nextInt(2);
-        mTeamColor1   = (0==coinflip)        ? "blue" : "red";
-        mTeamColor2   = ("red"==mTeamColor1) ? "blue" : "red";
-        mNeutralColor = "tan";
-        mBombColor    = "black";
+        mTeamColor1   = (0==coinflip)      ? blue : red;
+        mTeamColor2   = (red==mTeamColor1) ? blue : red;
+        mNeutralColor = tan;
+        mBombColor    = black;
 
         mTeamCards1   = theIdxes.subList( 0, 9); // 9 long
         mTeamCards2   = theIdxes.subList( 9,17); // 8 long
@@ -260,17 +308,26 @@ public class CastRemoteDisplayActivity extends AppCompatActivity {
     }
 
 
-    public void onClickWord(View v) {
+    private void onClickWord(View v) {
         int btnId = v.getId();
         int btnIdx = (int)mButtonId2Idx.get(btnId);
-        String btnColor = mWordColors[btnIdx];
+        int btnColor = mWordColors[btnIdx];
         String tmpstr = String.format("onClickWord: btnId=%4d, btnIdx=%4d, btnColor=%s\n",
                 btnId, btnIdx, btnColor);
         Log.d(TAG, tmpstr);
         PresentationService presentationService
                 = (PresentationService) CastRemoteDisplayLocalService.getInstance();
         if (presentationService != null) {
-            presentationService.updateButton(btnIdx,btnColor,"W()()T!");
+            presentationService.updateButton(btnIdx,btnColor,"");
+        }
+        mWordClickEnable = false;
+        this.enableWordButtons(mWordClickEnable);
+    }
+
+    private void enableWordButtons(boolean enabled){
+        for(int bidx=0; bidx<mButtonIds.length; bidx++){
+            Button tmpBtn = (Button) findViewById(mButtonIds[bidx]);
+            tmpBtn.setEnabled(enabled);
         }
     }
 

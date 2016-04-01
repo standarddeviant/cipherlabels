@@ -96,8 +96,11 @@ public class PresentationService extends CastRemoteDisplayLocalService {
         Log.d(TAG, tmpstr);
     }
 
-    public void updateButton(int btnIdx, String btnColor, String txtValue) {
+    public void updateButton(int btnIdx, int btnColor, String txtValue) {
         mPresentation.updateButton(btnIdx, btnColor, txtValue);
+    }
+    public void setButtonText(int btnIdx, String txtValue){
+        mPresentation.setButtonText(btnIdx,txtValue);
     }
 
 
@@ -175,7 +178,7 @@ public class PresentationService extends CastRemoteDisplayLocalService {
         }
 
 
-        public void updateButton(int btnIdx, String btnColor, String txtValue) {
+        public void updateButton(int btnIdx, int btnColor, String txtValue) {
             // String drawableStrId = String.format("fsButton%02d", btnIdx);
             // int drawableIntId = this.getResources().getIdentifier(drawableStrId, "id",
             //        getOwnerActivity().getPackageName());
@@ -184,7 +187,12 @@ public class PresentationService extends CastRemoteDisplayLocalService {
 
             Button tmpBtn = (Button) findViewById(mButtonIds[btnIdx]);
             tmpBtn.setText(txtValue);
+            tmpBtn.setBackgroundColor(btnColor);
+        }
 
+        public void setButtonText(int btnIdx, String txtValue){
+            Button tmpBtn = (Button) findViewById(mButtonIds[btnIdx]);
+            tmpBtn.setText(txtValue);
         }
 
     } // end class FirstScreenPresentation extends CastPresentation
