@@ -26,6 +26,8 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
@@ -70,6 +72,8 @@ public class CastRemoteDisplayActivity extends AppCompatActivity {
 
     private final String TAG = "CastRDisplayActivity";
 
+    private final int NUMWORDS = 25;
+
     // Second screen
     private Toolbar mToolbar;
 
@@ -79,18 +83,28 @@ public class CastRemoteDisplayActivity extends AppCompatActivity {
 
     private CastDevice mCastDevice;
 
-
-    private HashMap mButtonId2Idx = new HashMap(25);
-    private Button[] mButtons = new Button[25];
-    private String[] mWordValues = new String[25]; //FIXME, change 25 to be an xml param
-    // wordcolors = { "blue" , "red" , "yellow" , "black" }
-    private int[] mWordColors = new int[25]; //FIXME, change 25 to be an xml param
-    private int[] mWordStates = new int[25]; //FIXME, change 25 to be an xml param
+    // Init things that need to be stored
+    private HashMap       mButtonId2Idx = new HashMap(NUMWORDS); //FIXME, change NUMWORDS to be an xml param
+    // private HashMap STATE_mButtonId2Idx = new HashMap(NUMWORDS);
+    private String[]       mWordValues = new String[NUMWORDS];
+    // private String[] STATE_mWordValues = new String[NUMWORDS];
+    private int[]       mWordColors = new int[NUMWORDS];
+    // private int[] STATE_mWordColors = new int[NUMWORDS];
+    private int[]       mWordStates = new int[NUMWORDS];
+    // private int[] STATE_mWordStates = new int[NUMWORDS];
     private int mTeamColor1, mTeamColor2, mNeutralColor, mBombColor;
-    private List<Integer> mTeamCards1, mTeamCards2, mNeutralCards, mBombCards;
+    // private int STATE_mTeamColor1, STATE_mTeamColor2, STATE_mNeutralColor, STATE_mBombColor;
+    private ArrayList<Integer> mTeamCards1, mTeamCards2, mNeutralCards, mBombCards;
+    // private ArrayList<Integer> STATE_mTeamCards1, STATE_mTeamCards2, STATE_mNeutralCards, STATE_mBombCards;
     private boolean mWordClickEnable = false;
+    private int mWordSelected = -1;
 
-    int[] mButtonIds = {
+    private Button[]       mWordButtons = new Button[NUMWORDS];
+    // private Button[] STATE_mWordButtons = new Button[NUMWORDS];
+
+    private int mGameStateInitialized = 0;
+
+    private int[] mButtonIds = {
             R.id.ssButton01,
             R.id.ssButton02,
             R.id.ssButton03,
@@ -117,6 +131,7 @@ public class CastRemoteDisplayActivity extends AppCompatActivity {
             R.id.ssButton24,
             R.id.ssButton25
     };
+    // private int[] STATE_mButtonIds;
 
     /**
      * Initialization of the Activity after it is first created. Must at least
@@ -124,8 +139,8 @@ public class CastRemoteDisplayActivity extends AppCompatActivity {
      * describe what is to be displayed in the screen.
      */
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreate(Bundle saveState) {
+        super.onCreate(saveState);
 
         setContentView(R.layout.second_screen_layout);
         setFullScreen();
@@ -145,84 +160,107 @@ public class CastRemoteDisplayActivity extends AppCompatActivity {
         //    }
         // });
 
-        this.enableWordButtons(mWordClickEnable);
-
-        //initialize game state
-        this.initializeGameState();
+//        this.enableWordButtons(mWordClickEnable);
 
 
-        View.OnClickListener wordListener = new View.OnClickListener() {
+        if( 0 == mGameStateInitialized ) {
+            //initialize game state
+            this.initializeGameState();
+        }
+
+        if( null != saveState ) {
+            //restore game state
+            this.restore(saveState);
+        }
+
+
+
+        View.OnClickListener clickWordListener = new View.OnClickListener() {
             public void onClick(View v) {
-                int btnId = v.getId();
-                int btnIdx = (int)mButtonId2Idx.get(btnId);
-                int btnColor = mWordColors[btnIdx];
+                int theId = v.getId();
+                int theIdx = (int)mButtonId2Idx.get(theId);
+
+                if( theIdx != mWordSelected ) {
+                    // reset all the colors
+                    for(int btnLoopIdx=0; btnLoopIdx<NUMWORDS; btnLoopIdx++) {
+                        // assign correct colors to mWordColors
+                        mWordButtons[btnLoopIdx].setTextColor(0xFFFFFFFF);
+                        // FIXME - set colors based on what's already been selected
+                        mWordButtons[btnLoopIdx].setBackgroundColor(mWordColors[btnLoopIdx]);
+                    }
+                    mWordSelected = -1;
+                    return;
+                }
+
+                int btnColor = mWordColors[theIdx];
                 String tmpstr = String.format("onClickWord: btnId=%4d, btnIdx=%4d, btnColor=%s\n",
-                        btnId, btnIdx, btnColor);
+                        theId, theIdx, btnColor);
                 Log.d(TAG, tmpstr);
                 PresentationService presentationService
                         = (PresentationService) CastRemoteDisplayLocalService.getInstance();
                 if (presentationService != null) {
-                    presentationService.updateButton(btnIdx,btnColor,"");
+                    presentationService.updateButton(theIdx,btnColor,"");
                 }
-                mWordClickEnable = false;
-                enableWordButtons(mWordClickEnable);
+//                mWordClickEnable = false;
+//                enableWordButtons(mWordClickEnable);
             }
         };
 
 
-        PresentationService presentationService
-                = (PresentationService) CastRemoteDisplayLocalService.getInstance();
-        for(int btnIdx=0; btnIdx<25; btnIdx++) {
-            // String drawableStrId = String.format("ssButton%02d", btnIdx);
-            // int drawableIntId = this.getResources().getIdentifier(drawableStrId, "id",
-            // this.getPackageName());
-            // int drawableIntId = this.getResources().getIdentifier(drawableStrId, "drawable",
-            //        this.getPackageName());
+        //PresentationService presentationService
+        //        = (PresentationService) CastRemoteDisplayLocalService.getInstance();
+        // while( null == presentationService ){
+        //     presentationService = (PresentationService) CastRemoteDisplayLocalService.getInstance();
+        // }
 
+
+        View.OnLongClickListener longClickWordListener = new View.OnLongClickListener() {
+            public boolean onLongClick(View v) {
+                int theId = v.getId();
+                int theIdx = (int)mButtonId2Idx.get(theId);
+                for(int btnLoopIdx=0; btnLoopIdx<NUMWORDS; btnLoopIdx++) {
+                    // 'black out' all other buttons
+                    if( theIdx != btnLoopIdx ) {
+                        mWordButtons[btnLoopIdx].setTextColor(0xFF000000);
+                        mWordButtons[btnLoopIdx].setBackgroundColor(0xFF000000);
+                        // enableWordButtons(mWordClickEnable);
+                    }
+                }
+                mWordSelected = theIdx;
+                return true;
+            }
+        };
+
+        for(int btnIdx=0; btnIdx<NUMWORDS; btnIdx++) {
              String tmpstr = String.format("would like to set %d to %s\n",mButtonIds[btnIdx],mWordValues[btnIdx]);
              Log.d(TAG, tmpstr);
 
             Button tmpBtn = (Button) findViewById(mButtonIds[btnIdx]);
             mButtonId2Idx.put(mButtonIds[btnIdx], btnIdx);
-            mButtons[btnIdx] = tmpBtn;
-            mButtons[btnIdx].setText(mWordValues[btnIdx]);
-            mButtons[btnIdx].setBackgroundColor(mWordColors[btnIdx]);
-            mButtons[btnIdx].setOnClickListener(wordListener);
-//            tmpBtn.setText(mWordValues[btnIdx]);
+            mWordButtons[btnIdx] = tmpBtn;
+            mWordButtons[btnIdx].setText(mWordValues[btnIdx]);
+            mWordButtons[btnIdx].setBackgroundColor(mWordColors[btnIdx]);
+            mWordButtons[btnIdx].setOnClickListener(clickWordListener);
+            mWordButtons[btnIdx].setOnLongClickListener(longClickWordListener);
             mWordStates[btnIdx] = 0;
-
-
-            if (presentationService != null) {
-                presentationService.setButtonText(btnIdx,mWordValues[btnIdx]);
-            }
-
-            // final int tmpBtnIdx = btnIdx;
-            // tmpBtn.setOnClickListener(new View.OnClickListener() {
-            //     @Override
-            //     public void onClick(View v) {
-            //         // Change the remote display animation color when the button is clicked
-            //         PresentationService presentationService
-            //                 = (PresentationService) CastRemoteDisplayLocalService.getInstance();
-            //         if (presentationService != null) {
-            //             this.buttonClick(tmpBtnIdx);
-            //         }
-            //     }
-            // });
-
         }
 
-        View.OnLongClickListener flipListener = new View.OnLongClickListener() {
-            public boolean onLongClick(View v) {
-                // Button clickedButton = (Button) v;
-                // String buttonText = clickedButton.getText().toString();
-                // Log.v(TAG, "button long pressed --> " + buttonText);
-                mWordClickEnable = true;
-                enableWordButtons(mWordClickEnable);
-                return true;
+        View.OnClickListener clickManualUpdateListener = new View.OnClickListener() {
+            public void onClick(View v) {
+                PresentationService presentationService
+                        = (PresentationService) CastRemoteDisplayLocalService.getInstance();
+                for( int btnIdx=0; btnIdx<NUMWORDS; btnIdx++ ) {
+                    if (presentationService != null) {
+                        presentationService.setButtonText(btnIdx, mWordValues[btnIdx]);
+                    }
+                }
             }
         };
-        Button tmpFlipBtn = (Button) findViewById(R.id.flipButton);
-        tmpFlipBtn.setOnLongClickListener(flipListener);
+
+        Button tmpManualUpdateBtn = (Button) findViewById(R.id.manualUpdate);
+        tmpManualUpdateBtn.setOnClickListener(clickManualUpdateListener);
+
+
 
 
 
@@ -249,29 +287,59 @@ public class CastRemoteDisplayActivity extends AppCompatActivity {
                 MediaRouter.CALLBACK_FLAG_REQUEST_DISCOVERY);
         // END boiler plate cast code
         // END boiler plate cast code
+    } // END onCreate for CastRemoteDisplayActivity
+
+    @Override
+    public void onSaveInstanceState(Bundle saveState) {
+        // Save the user's current game state
+        saveState.putSerializable("mButtonId2Idx" , mButtonId2Idx );
+        saveState.putSerializable("mWordValues"   , mWordValues   );
+        saveState.putSerializable("mWordColors"   , mWordColors   );
+        saveState.putSerializable("mWordStates"   , mWordStates   );
+        saveState.putSerializable("mTeamColor1"   , mTeamColor1   );
+        saveState.putSerializable("mTeamColor2"   , mTeamColor2   );
+        saveState.putSerializable("mNeutralColor" , mNeutralColor );
+        saveState.putSerializable("mBombColor"    , mBombColor    );
+        saveState.putSerializable("mTeamCards1"   , mTeamCards1   );
+        saveState.putSerializable("mTeamCards2"   , mTeamCards2   );
+        saveState.putSerializable("mNeutralCards" , mNeutralCards );
+        saveState.putSerializable("mBombCards"    , mBombCards    );
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(saveState);
     }
 
-//    public class buttonListener implements View.OnClickListener {
-//        @Override
-//        public void onClick(View v) {
-//                int btnIdx = (int)mButtonId2Idx.get(v.getId());
-//
-//                String btnColor = mWordColors[btnIdx];
-//                PresentationService presentationService
-//                        = (PresentationService) CastRemoteDisplayLocalService.getInstance();
-//                if (presentationService != null) {
-//                    presentationService.updateButton(btnIdx,btnColor,"W()()T!");
-//                }
-//        }
-//    }
+    @Override
+    public void onRestoreInstanceState(Bundle saveState) {
+        this.restore(saveState);
+    }
 
+    public void restore(Bundle saveState) {
+        if (saveState != null) {
+            // places = (ArrayList<HashMap<String,String>>) saveState.getSerializable("places");
+            mButtonId2Idx = (HashMap)   saveState.getSerializable("mButtonId2Idx");
+            mWordValues   = (String[])  saveState.getSerializable("mWordValues");
+            mWordColors   = (int[])     saveState.getSerializable("mWordColors");
+            mWordStates   = (int[])     saveState.getSerializable("mWordStates");
+            mTeamColor1   = (int)       saveState.getSerializable("mTeamColor1");
+            mTeamColor2   = (int)       saveState.getSerializable("mTeamColor2");
+            mNeutralColor = (int)       saveState.getSerializable("mNeutralColor");
+            mBombColor    = (int)       saveState.getSerializable("mBombColor");
+            mTeamCards1   = (ArrayList<Integer>) saveState.getSerializable("mTeamCards1");
+            mTeamCards2   = (ArrayList<Integer>) saveState.getSerializable("mTeamCards2");
+            mNeutralCards = (ArrayList<Integer>) saveState.getSerializable("mNeutralCards");
+            mBombCards    = (ArrayList<Integer>) saveState.getSerializable("mBombCards");
+        }
+        // Always call the superclass so it can save the view hierarchy state
+        super.onRestoreInstanceState(saveState);
+    }
 
     private String[] getRandomWordValues() {
         Resources res = getResources();
         List<String> thewords = Arrays.asList(res.getStringArray(R.array.LargeWordsArray));
-        String[] retWords = new String[25]; //FIXME, change 25 to be xml param
+        String[] retWords = new String[NUMWORDS]; //FIXME, change NUMWORDS to be xml param
         Collections.shuffle(thewords);
-        for( int idx=0; idx<25; idx++) {retWords[idx]=thewords.get(idx);}
+        for( int idx=0; idx<NUMWORDS; idx++) {retWords[idx]=thewords.get(idx);}
         return  retWords;
     }
 
@@ -285,7 +353,7 @@ public class CastRemoteDisplayActivity extends AppCompatActivity {
 
         // Create list of 0 - 24, shuffled
         List<Integer> theIdxes = new ArrayList<Integer>();
-        for( int tidx=0; tidx<25; tidx++) {theIdxes.add(tidx);}
+        for( int tidx=0; tidx<NUMWORDS; tidx++) {theIdxes.add(tidx);}
         Collections.shuffle(theIdxes);
 
         int coinflip = rand.nextInt(2);
@@ -294,10 +362,10 @@ public class CastRemoteDisplayActivity extends AppCompatActivity {
         mNeutralColor = tan;
         mBombColor    = black;
 
-        mTeamCards1   = theIdxes.subList( 0, 9); // 9 long
-        mTeamCards2   = theIdxes.subList( 9,17); // 8 long
-        mNeutralCards = theIdxes.subList(17,24); // 7 long
-        mBombCards    = theIdxes.subList(24,25); // 1 long
+        mTeamCards1   = new ArrayList<Integer>(theIdxes.subList( 0, 9)); // 9 long
+        mTeamCards2   = new ArrayList<Integer>(theIdxes.subList( 9,17)); // 8 long
+        mNeutralCards = new ArrayList<Integer>(theIdxes.subList(17,24)); // 7 long
+        mBombCards    = new ArrayList<Integer>(theIdxes.subList(24,25)); // 1 long
 
         // assign correct colors to mWordColors
         for (Integer tmpidx: mTeamCards1)   {mWordColors[tmpidx] = mTeamColor1;}
@@ -318,10 +386,10 @@ public class CastRemoteDisplayActivity extends AppCompatActivity {
         PresentationService presentationService
                 = (PresentationService) CastRemoteDisplayLocalService.getInstance();
         if (presentationService != null) {
-            presentationService.updateButton(btnIdx,btnColor,"");
+            presentationService.updateButton(btnIdx,btnColor, "");
         }
-        mWordClickEnable = false;
-        this.enableWordButtons(mWordClickEnable);
+//        mWordClickEnable = false;
+//        this.enableWordButtons(mWordClickEnable);
     }
 
     private void enableWordButtons(boolean enabled){
@@ -452,6 +520,13 @@ public class CastRemoteDisplayActivity extends AppCompatActivity {
                     public void onRemoteDisplaySessionStarted(
                             CastRemoteDisplayLocalService service) {
                         Log.d(TAG, "onServiceStarted");
+                        // PresentationService presentationService
+                        //         = (PresentationService) CastRemoteDisplayLocalService.getInstance();
+                        // for(int btnIdx=0; btnIdx<NUMWORDS; btnIdx++){
+                        //     if( null != presentationService ) {
+                        //         presentationService.setButtonText(btnIdx, mWordValues[btnIdx]);
+                        //     }
+                        // }
                     }
 
                     @Override

@@ -41,9 +41,9 @@ public class PresentationService extends CastRemoteDisplayLocalService {
     private static final String TAG = "PresentationService";
 
     // First screen
-//    private CastPresentation mPresentation;
+    // private CastPresentation mPresentation;
     private FirstScreenPresentation mPresentation;
-    private MediaPlayer mMediaPlayer; // for audio
+    // private MediaPlayer mMediaPlayer; // for audio
     // private CubeRenderer mCubeRenderer;
 
 
@@ -51,9 +51,9 @@ public class PresentationService extends CastRemoteDisplayLocalService {
     public void onCreate() {
         super.onCreate();
         // Audio
-        mMediaPlayer = MediaPlayer.create(this, R.raw.sound);
-        mMediaPlayer.setVolume((float) 0.1, (float) 0.1);
-        mMediaPlayer.setLooping(true);
+        // mMediaPlayer = MediaPlayer.create(this, R.raw.sound);
+        // mMediaPlayer.setVolume((float) 0.1, (float) 0.1);
+        // mMediaPlayer.setLooping(true);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class PresentationService extends CastRemoteDisplayLocalService {
 
     private void dismissPresentation() {
         if (mPresentation != null) {
-            mMediaPlayer.stop();
+            // mMediaPlayer.stop();
             mPresentation.dismiss();
             mPresentation = null;
         }
@@ -80,7 +80,7 @@ public class PresentationService extends CastRemoteDisplayLocalService {
 
         try {
             mPresentation.show();
-            mMediaPlayer.start();
+            // mMediaPlayer.start();
         } catch (WindowManager.InvalidDisplayException ex) {
             Log.e(TAG, "Unable to show presentation, display was removed.", ex);
             dismissPresentation();
@@ -100,7 +100,7 @@ public class PresentationService extends CastRemoteDisplayLocalService {
         mPresentation.updateButton(btnIdx, btnColor, txtValue);
     }
     public void setButtonText(int btnIdx, String txtValue){
-        mPresentation.setButtonText(btnIdx,txtValue);
+        mPresentation.setButtonText(btnIdx, txtValue);
     }
 
 
